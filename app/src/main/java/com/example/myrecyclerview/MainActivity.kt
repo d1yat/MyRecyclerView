@@ -1,19 +1,27 @@
 package com.example.myrecyclerview
 
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myrecyclerview.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var activityMain: ActivityMainBinding
+
 //    private lateinit var rvHeroes: RecyclerView
 //    private var list = ArrayList<Hero>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        activityMain = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(activityMain.root)
 
-        var rvHeroes: RecyclerView = findViewById(R.id.rv_heroes)
+        var rvHeroes: RecyclerView = activityMain.rvHeroes
+//        var rvHeroes: RecyclerView = findViewById(R.id.rv_heroes)
         rvHeroes.setHasFixedSize(true)
 
         var list = ArrayList<Hero>()
@@ -25,18 +33,32 @@ class MainActivity : AppCompatActivity() {
         get() {
             val dataName = resources.getStringArray(R.array.data_name)
             val dataDescription = resources.getStringArray(R.array.data_description)
-            val dataPhoto = resources.obtainTypedArray(R.array.data_photo)
+            val dataPhoto = resources.getStringArray(R.array.data_photo)
             val listHero = ArrayList<Hero>()
             for (i in dataName.indices) {
-                val hero = Hero(dataName[i],dataDescription[i], dataPhoto.getResourceId(i, -1))
+                val hero = Hero(dataName[i], dataDescription[i], dataPhoto[i])
                 listHero.add(hero)
             }
             return listHero
         }
 
     private fun showRecyclerList(list: ArrayList<Hero>, rvHeroes: RecyclerView) {
-        rvHeroes.layoutManager = LinearLayoutManager(this)
+        if (applicationContext.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            rvHeroes.layoutManager = GridLayoutManager(this, 2)
+        } else {
+            rvHeroes.layoutManager = LinearLayoutManager(this)
+        }
         val listHeroAdapter = ListHeroAdapter(list)
         rvHeroes.adapter = listHeroAdapter
+        listHeroAdapter.setOnItemClickCallback(object : ListHeroAdapter.OnItemClickCallback {
+            override fun onItemClicked(data: Hero) {
+                showSelectedHero(data)
+            }
+
+        })
+    }
+
+    private fun showSelectedHero(hero: Hero) {
+        Toast.makeText(this, "Kamu memilih " + hero.name, Toast.LENGTH_SHORT).show()
     }
 }
