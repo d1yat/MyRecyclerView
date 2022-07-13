@@ -15,7 +15,7 @@ class ListHeroAdapter(private val listHero: ArrayList<Hero>) : RecyclerView.Adap
     interface OnItemClickCallback {
         fun onItemClicked(data: Hero)
     }
-
+// test 2
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
         this.onItemClickCallback = onItemClickCallback
     }
